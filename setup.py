@@ -23,7 +23,7 @@ NAME = PACKAGE.replace('_', '-')
 INSTALL_REQUIRES = [
     'datapackage-pipelines',
     'flask',
-    'flask-jsonpify'
+    'flask-jsonpify',
     'flask-cors',
 ]
 README = read('README.md')
