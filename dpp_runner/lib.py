@@ -17,7 +17,6 @@ class DppRunner:
 
     def _run_in_background(self, uid, dirname, status_cb=None):
         def progress_cb(pr: ProgressReport):
-            logging.info('GOT CALLBACK')
             with self.rlock:
                 pipeline_id, row_count, success = pr
                 current = self.running[uid]['progress'].get(pipeline_id)
@@ -36,7 +35,6 @@ class DppRunner:
                             status_cb(pipeline_id, 'SUCCESS' if success else 'FAILED')
 
 
-        logging.info('Running %s in background', uid)
         try:
             results = run_pipelines('all',
                                     dirname, 
@@ -44,9 +42,8 @@ class DppRunner:
                                     dirty=False, 
                                     force=False, 
                                     concurrency=999,
-                                    verbose_logs=True,
+                                    verbose_logs=False,
                                     progress_cb=progress_cb)
-            logging.info('Done!')
             with self.rlock:
                 self.running[uid]['results'] = [
                     p._asdict()

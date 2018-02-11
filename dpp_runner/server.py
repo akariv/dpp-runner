@@ -29,7 +29,11 @@ def initialize_app(flask_app):
 def create_runner():
     data = request.get_data()
     kind = request.values.get('kind')
-    uid = runner.start(kind, data)
+
+    def status_cb(pipeline_id, status):
+        logging.info('STATUS for %s: %s', pipeline_id, status)
+
+    uid = runner.start(kind, data, status_cb=status_cb)
     return jsonpify({'uid': uid})
 
 
