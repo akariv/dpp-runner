@@ -1,0 +1,4 @@
+pipeline-spec.yaml
+*.egg-info/
+dist
+__pycache__
