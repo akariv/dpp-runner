@@ -18,13 +18,15 @@ class DppRunner:
     def _run_in_background(self, uid, dirname, status_cb=None):
         def progress_cb(pr: ProgressReport):
             with self.rlock:
-                pipeline_id, row_count, success = pr
+                pipeline_id, row_count, success, errors, stats = pr
                 current = self.running[uid]['progress'].get(pipeline_id)
                 self.running[uid]['progress'].update({
                     pipeline_id: dict(
                         done=success is not None,
                         success=success,
-                        rows=row_count
+                        rows=row_count,
+                        errors=errors,
+                        stats=stats
                     )
                 })
                 if status_cb:
@@ -32,7 +34,9 @@ class DppRunner:
                         status_cb(pipeline_id, 'INPROGRESS')
                     else:
                         if success is not None:
-                            status_cb(pipeline_id, 'SUCCESS' if success else 'FAILED')
+                            status_cb(pipeline_id, 
+                                      'SUCCESS' if success else 'FAILED',
+                                      errors=errors, stats=stats)
 
 
         try:
