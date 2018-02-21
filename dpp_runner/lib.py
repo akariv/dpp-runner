@@ -15,11 +15,11 @@ class DppRunner:
         self.pool = concurrent.futures.ThreadPoolExecutor(max_workers=8)
 
 
-    def _run_in_background(self, uid, dirname, verbosity=False, status_cb=None):
+    def _run_in_background(self, uid, dirname, verbosity=0, status_cb=None):
         def progress_cb(pr: ProgressReport):
             with self.rlock:
                 pipeline_id, row_count, success, errors, stats = pr
-                if verbosity:
+                if verbosity > 0:
                     logging.info('Callback %s #%d (success: %s, errors: %r, stats: %s)',
                                  pipeline_id, row_count, success, errors,stats)
                 current = self.running[uid]['progress'].get(pipeline_id)
@@ -42,7 +42,7 @@ class DppRunner:
                                       errors=errors, stats=stats)
 
         try:
-            if verbosity:
+            if verbosity > 0:
                 logging.info('Running all pipelines')
             results = run_pipelines('all',
                                     dirname, 
@@ -50,23 +50,23 @@ class DppRunner:
                                     dirty=False, 
                                     force=False, 
                                     concurrency=999,
-                                    verbose_logs=verbosity,
+                                    verbose_logs=verbosity > 1,
                                     progress_cb=progress_cb)
-            if verbosity:
+            if verbosity > 0:
                 logging.info('Running complete')
             with self.rlock:
                 self.running[uid]['results'] = [
                     p._asdict()
                     for p in results
                 ]
-                if verbosity:
+                if verbosity > 0:
                     logging.info('Results %r', self.running[uid])
                 del self.running[uid]['dir']
         except Exception as e:
             logging.exception('Failed to run pipelines')
 
 
-    def start(self, kind, data, verbosity=False, status_cb=None):
+    def start(self, kind, data, verbosity=0, status_cb=None):
         if kind is None:
             filename = 'pipeline-spec.yaml'
         else:
