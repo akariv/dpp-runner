@@ -30,8 +30,12 @@ def create_runner():
     data = request.get_data()
     kind = request.values.get('kind')
 
-    def status_cb(pipeline_id, status):
+    def status_cb(pipeline_id, status, errors=None, stats=None):
         logging.info('STATUS for %s: %s', pipeline_id, status)
+        if errors is not None and len(errors) > 0:
+            logging.info('ERRORS for %s:\n%s', pipeline_id, '\n'.join(errors))
+        if stats is not None:
+            logging.info('STATS for %s:\n%s', pipeline_id, stats)
 
     uid = runner.start(kind, data, status_cb=status_cb)
     return jsonpify({'uid': uid})
@@ -47,4 +51,4 @@ initialize_app(app)
 logging.info('DPP-Server Running')
 
 if __name__ == '__main__':
-    app.run()
+    app.run(port=5050)

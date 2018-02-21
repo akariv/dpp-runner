@@ -21,7 +21,7 @@ def read(*paths):
 PACKAGE = 'dpp_runner'
 NAME = PACKAGE.replace('_', '-')
 INSTALL_REQUIRES = [
-    'datapackage-pipelines',
+    'datapackage-pipelines>=1.6.6',
     'flask',
     'flask-jsonpify',
     'flask-cors',
