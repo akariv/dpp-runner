@@ -9,10 +9,10 @@ from datapackage_pipelines.manager import ProgressReport, run_pipelines
 
 class DppRunner:
 
-    def __init__(self):
+    def __init__(self, max_workers=8):
         self.running = {}
         self.rlock = threading.RLock()
-        self.pool = concurrent.futures.ThreadPoolExecutor(max_workers=8)
+        self.pool = concurrent.futures.ThreadPoolExecutor(max_workers=max_workers)
 
 
     def _run_in_background(self, uid, dirname, verbosity=0, status_cb=None):
