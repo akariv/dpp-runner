@@ -61,9 +61,11 @@ class DppRunner:
                 ]
                 if verbosity > 0:
                     logging.info('Results %r', self.running[uid])
-                del self.running[uid]['dir']
         except Exception as e:
             logging.exception('Failed to run pipelines')
+        finally:
+            self.running[uid]['dir'].cleanup()
+            del self.running[uid]['dir']
 
 
     def start(self, kind, data, verbosity=0, status_cb=None):
